@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "name": "Wireless Bluetooth Headphones",
+    "brand": "SoundWave",
+    "category": "Electronics",
+    "price": 45.99,
+    "stock": 120,
+    "rating": 4.5,
+    "reviews": 980,
+    "description": "Over-ear headphones with active noise cancellation and 30-hour battery life.",
+    "image": "https://placehold.co/800x600?text=Headphones"
+  },
+  {
+    "id": 2,
+    "name": "Smart Fitness Watch",
+    "brand": "PulseFit",
+    "category": "Wearables",
+    "price": 89.99,
+    "stock": 75,
+    "rating": 4.3,
+    "reviews": 540,
+    "description": "Tracks heart rate, sleep, and workouts with a 7-day battery life.",
+    "image": "https://placehold.co/800x600?text=Fitness+Watch"
+  },
+  {
+    "id": 3,
+    "name": "Stainless Steel Water Bottle",
+    "brand": "HydroLife",
+    "category": "Home & Kitchen",
+    "price": 15.5,
+    "stock": 300,
+    "rating": 4.7,
+    "reviews": 1200,
+    "description": "Double-walled insulated bottle that keeps drinks cold for 24 hours.",
+    "image": "https://placehold.co/800x600?text=Water+Bottle"
+  },
+  {
+    "id": 4,
+    "name": "Ergonomic Office Chair",
+    "brand": "ComfortPro",
+    "category": "Furniture",
+    "price": 179.0,
+    "stock": 40,
+    "rating": 4.6,
+    "reviews": 310,
+    "description": "Adjustable lumbar support and armrests for long work sessions.",
+    "image": "https://placehold.co/800x600?text=Office+Chair"
+  },
+  {
+    "id": 5,
+    "name": "Portable Power Bank 20000mAh",
+    "brand": "VoltCharge",
+    "category": "Electronics",
+    "price": 29.99,
+    "stock": 200,
+    "rating": 4.4,
+    "reviews": 875,
+    "description": "Fast-charges two devices at once with USB-C and USB-A ports.",
+    "image": "https://placehold.co/800x600?text=Power+Bank"
+  },
+  {
+    "id": 6,
+    "name": "Non-Stick Frying Pan Set",
+    "brand": "ChefCraft",
+    "category": "Home & Kitchen",
+    "price": 39.99,
+    "stock": 150,
+    "rating": 4.8,
+    "reviews": 430,
+    "description": "3-piece set with a scratch-resistant coating, oven-safe up to 260°C.",
+    "image": "https://placehold.co/800x600?text=Frying+Pan+Set"
+  }
+]
