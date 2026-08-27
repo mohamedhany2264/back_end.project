@@ -1,122 +1,151 @@
-const fs = require("fs");
-let products = JSON.parse(
-  fs.readFileSync("./data/products-data.json", "utf-8")
-);
+const Product = require("../models/product-model");
+const deleteUploadedFile = require("../utils/delete-uploaded-file");
 
-const getAllProducts = (req, res) => {
-  res.status(200).json({
-    status: "success",
-    count: products.length,
-    data: {
-      products,
-    },
-  });
-};
+const getAllProducts = async (req, res) => {
+  try {
+    const products = await Product.find();
 
-const createProduct = (req, res) => {
-  const newId = products[products.length - 1].id + 1;
-
-  const newProduct = {
-    id: newId,
-    ...req.body,
-  };
-
-  products.push(newProduct);
-
-  fs.writeFile(
-    "./data/products-data.json",
-    JSON.stringify(products, null, 2),
-    (err) => {
-      if (err) {
-        return res.status(500).json({
-          message: "Error saving file",
-        });
-      }
-
-      res.status(201).json({
-        status: "success",
-        message: "New product added",
-        data: {
-          product: newProduct,
-        },
-      });
-    }
-  );
-};
-
-const getProductById = (req, res) => {
-  const productId = +req.params.id;
-
-  const product = products.find((p) => p.id === productId);
-
-  if (!product) {
-    return res.status(404).json({
+    res.status(200).json({
+      status: "success",
+      count: products.length,
+      data: {
+        products,
+      },
+    });
+  } catch (error) {
+    res.status(400).json({
       status: "error",
-      message: "Product not found",
+      message: `Error fetching products: ${error.message}`,
     });
   }
-
-  res.status(200).json({
-    status: "success",
-    data: {
-      product,
-    },
-  });
 };
 
-const updateProduct = (req, res) => {
-  const productId = +req.params.id;
+const createProduct = async (req, res) => {
+  try {
+    const newProduct = await Product.create({
+      ...req.body,
+      imageUrl: req.file?.filename,
+    });
 
-  const product = products.find((p) => p.id === productId);
-
-  if (!product) {
-    return res.status(404).json({
+    res.status(201).json({
+      status: "success",
+      message: "Product added",
+      data: {
+        product: newProduct,
+      },
+    });
+  } catch (error) {
+    if (req.file) {
+      deleteUploadedFile("products", req.file.filename);
+    }
+    res.status(400).json({
       status: "error",
-      message: "Product not found",
+      message: `Error creating product: ${error.message}`,
     });
   }
-
-  const updatedProduct = Object.assign(product, req.body);
-
-  fs.writeFile(
-    "./data/products-data.json",
-    JSON.stringify(products, null, 2),
-    () => {
-      res.status(200).json({
-        status: "success",
-        message: "Product updated",
-        data: {
-          product: updatedProduct,
-        },
-      });
-    }
-  );
 };
 
-const deleteProduct = (req, res) => {
-  const productId = +req.params.id;
+const getProductById = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "Product not found" });
+    }
 
-  const index = products.findIndex((p) => p.id === productId);
-
-  if (index === -1) {
-    return res.status(404).json({
-      status: "error",
-      message: "Product not found",
+    res.status(200).json({
+      status: "success",
+      data: {
+        product,
+      },
     });
-  }
-
-  products.splice(index, 1);
-
-  fs.writeFile(
-    "./data/products-data.json",
-    JSON.stringify(products, null, 2),
-    () => {
-      res.status(200).json({
-        status: "success",
-        message: "Product deleted",
+  } catch (error) {
+    if (error.name === "CastError") {
+      return res.status(400).json({
+        status: "error",
+        message: "Invalid product ID",
       });
     }
-  );
+    res.status(400).json({
+      status: "error",
+      message: `Error fetching product: ${error.message}`,
+    });
+  }
+};
+
+const updateProduct = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "Product not found" });
+    }
+
+    if (req.file) {
+      req.body.imageUrl = req.file.filename;
+      if (product.imageUrl) deleteUploadedFile("products", product.imageUrl);
+    }
+
+    Object.assign(product, req.body);
+    const updatedProduct = await product.save();
+
+    res.status(200).json({
+      status: "success",
+      message: "Product updated",
+      data: {
+        product: updatedProduct,
+      },
+    });
+  } catch (error) {
+    if (req.file) {
+      deleteUploadedFile("products", req.file.filename);
+    }
+    if (error.name === "CastError") {
+      return res.status(400).json({
+        status: "error",
+        message: "Invalid product ID",
+      });
+    }
+    res.status(400).json({
+      status: "error",
+      message: `Error updating product: ${error.message}`,
+    });
+  }
+};
+
+const deleteProduct = async (req, res) => {
+  try {
+    const deletedProduct = await Product.findByIdAndDelete(req.params.id);
+    if (!deletedProduct) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "Product not found" });
+    }
+    if (deletedProduct.imageUrl) {
+      deleteUploadedFile("products", deletedProduct.imageUrl);
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: "Product deleted",
+      data: {
+        product: deletedProduct,
+      },
+    });
+  } catch (error) {
+    if (error.name === "CastError") {
+      return res.status(400).json({
+        status: "error",
+        message: "Invalid product ID",
+      });
+    }
+    res.status(400).json({
+      status: "error",
+      message: `Error deleting product: ${error.message}`,
+    });
+  }
 };
 
 module.exports = {
