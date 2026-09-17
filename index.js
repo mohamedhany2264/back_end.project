@@ -4,6 +4,7 @@ dns.setServers(["8.8.8.8", "8.8.4.4"]);
 require("dotenv").config();
 
 const express = require("express");
+const cors = require("cors");
 const productRouter = require("./routes/product-routes");
 const dbConnect = require("./config/db-connect");
 const path = require("path");
@@ -13,6 +14,8 @@ const app = express();
 dbConnect();
 
 app.use(express.json());
+
+app.use(cors());
 
 app.use("/api/v1/products", productRouter);
 
